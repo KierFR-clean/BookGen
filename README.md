@@ -1,5 +1,14 @@
 # React + Vite
 
+To run application: 
+
+1. open backend, artisan serve, open xampp, import db in phpmyadmin
+
+2. install missing dependencies
+   
+3. npm run dev, and enjoy
+
+
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
 Currently, two official plugins are available:
