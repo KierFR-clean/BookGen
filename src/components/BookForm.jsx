@@ -77,7 +77,7 @@ const BookForm = ({ isUpdating = false }) => {
 
   return (
     <div className='container mx-auto py-8 px-4'>
-      <div className='max-w-2xl mx-auto rounded-lg bg-white shadow-lg p-8 '>
+      <div className='max-w-2xl mx-auto rounded-lg bg-white shadow-lg p-8  '>
         <Link
           to='/'
           className="bg-[#a7d28d]  hover:bg-[#fff] shadow-lg hover:shadow-md rounded-xl px-2 py-2 font-medium text-white"
@@ -85,7 +85,7 @@ const BookForm = ({ isUpdating = false }) => {
           Back to Book Collection
         </Link>
 
-        <div className='flex items-center justify-between mb-8 4'>
+        <div className='flex items-center justify-between mb-8 '>
 
           <h2 className='text-2xl font-bold text-gray-800 '>
             {isUpdating ? 'Update A Book' : 'Add A New Book'}
@@ -164,6 +164,7 @@ const BookForm = ({ isUpdating = false }) => {
               onChange={handleBookChange}
               className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 bg-white text-gray-900 focus:ring-green-200"
               required
+              maxLength="255"
               rows="5"
             />
           </div>

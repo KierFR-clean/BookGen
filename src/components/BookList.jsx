@@ -101,7 +101,7 @@ const BookList = () => {
           <span className="mr-2">+</span> Add New Book In Collection
         </Link>
       </div>
-      <div className='overflow-x-hidden' style={{ maxHeight: '730px' }}>
+      <div className='overflow-x-hidden' style={{ maxHeight: '700px' }}>
         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
           <div className="p-6">
             <div className="bookcard flex flex-col justify-center bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition duration-200 cursor-pointer ">
