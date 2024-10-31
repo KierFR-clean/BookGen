@@ -19,6 +19,7 @@ const BookForm = ({ isUpdating = false }) => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [error, setError] = useState(null);
+  const [errors, setErrors] = useState({});
   const [bookFormData, setBookFormData] = useState({
     title: '',
     author: '',
@@ -36,6 +37,40 @@ const BookForm = ({ isUpdating = false }) => {
       fetchSingleBook();
     }
   }, [isUpdating]);
+
+  /**
+   * 
+   * checks if the form data is valid
+   * 
+   * @returns boolean
+   * 
+   * 
+   */
+  const checkForBookError = () => {
+    const bookerror = {};
+    const nowyear = new Date().getFullYear();
+    const publishedyear = parseInt(bookFormData.published_year);
+
+    if (!bookFormData.title.trim()) bookerror.title = 'Title is required';
+    else if (bookFormData.title.length > 255) bookerror.title = 'Title should be less than 255 characters';
+
+    if (!bookFormData.author.trim()) bookerror.author = 'Author name is required';
+    else if (bookFormData.author.length > 255) bookerror.author = 'Author name should be less than 255 characters';
+
+    if (!bookFormData.genre.trim()) bookerror.genre = 'Book genre is required';
+    else if (bookFormData.genre.length > 255) bookerror.genre = 'Book genre should be less than 255 characters';
+
+    if (!bookFormData.description.trim()) bookerror.description = 'Book description is required';
+    else if (bookFormData.description.length > 255) bookerror.description = 'Book description should be less than 255 characters';
+
+    if (!bookFormData.published_year) bookerror.published_year = 'Published year is required';
+    else if (publishedyear < 1000 || publishedyear > nowyear) bookerror.published_year = `Book published year must be between 1000 and ${nowyear}`;
+    //update the state of errors
+    setErrors(bookerror);
+    // used to check if there are no errors
+    return Object.keys(bookerror).length === 0;
+
+  }
 
   /**
    * @returns books from the database
@@ -65,6 +100,11 @@ const BookForm = ({ isUpdating = false }) => {
   */
   const handleBookFormSubmit = async (e) => {
     e.preventDefault();
+
+    if (!checkForBookError()) {
+      return;
+    }
+
     try {
       setLoading(true);
       const givenURL = isUpdating
@@ -88,7 +128,25 @@ const BookForm = ({ isUpdating = false }) => {
       setLoading(false);
       navigate('/');
     } catch (error) {
-      setError(error.message);
+      setLoading(false);
+      /**
+       * I check first if it's string so i can parse the JSON
+       * i parse the errors into JSON
+       * updates the UI now with error message
+       * if parsing fails it means it's an error from client
+       * if it's not string then it's an error from server
+       * 
+       */
+      if (typeof error.message === 'string') {
+        try {
+          const parsedError = JSON.parse(error.message);
+          setErrors(parsedError);
+        } catch {
+          setError(error.message);
+        }
+      } else {
+        setError('An error occurred, please try again');
+      }
     }
   };
 
@@ -138,7 +196,7 @@ const BookForm = ({ isUpdating = false }) => {
 
         <form onSubmit={handleBookFormSubmit} className='space-y-3'>
           <div>
-            <label className='block text-left text-2xl  text-gray-700 font-bold mb-2'>
+            <label className='block text-left text-2xl text-gray-700 font-bold mb-2'>
               Title
             </label>
             <input
@@ -146,10 +204,15 @@ const BookForm = ({ isUpdating = false }) => {
               name="title"
               value={bookFormData.title}
               onChange={handleBookChange}
-              className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 bg-white text-gray-900 focus:ring-green-200"
-              required
+              //change the border color if there is an error
+              className={`w-full border ${errors.title ? 'border-red-500' : 'border-gray-300'} rounded-lg px-4 py-2 focus:outline-none focus:ring-2 bg-white text-gray-900 focus:ring-green-200`}
             />
+            {/* if there's an error in the title displays the error*/}
+            {errors.title && (
+              <p className="text-red-500 mt-1 text-sm ">{errors.title}</p>
+            )}
           </div>
+
           <div>
             <label className='block text-left text-2xl  text-gray-700 font-bold mb-2'>
               Author
@@ -159,9 +222,13 @@ const BookForm = ({ isUpdating = false }) => {
               name="author"
               value={bookFormData.author}
               onChange={handleBookChange}
-              className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 bg-white text-gray-900 focus:ring-green-200"
-              required
-            />
+              //same as title above
+              className={`w-full border ${errors.title ? 'border-red-500' : 'border-gray-300'} rounded-lg px-4 py-2 focus:outline-none focus:ring-2 bg-white text-gray-900 focus:ring-green-200`}
+              />
+              {/* if there's an error in the author displays the error*/}
+              {errors.author && (
+                <p className="text-red-500 text-sm mt-1">{errors.author}</p>
+              )}
           </div>
           <div>
             <label className='block text-left text-2xl  text-gray-700 font-bold mb-2'>
@@ -172,11 +239,11 @@ const BookForm = ({ isUpdating = false }) => {
               name="published_year"
               value={bookFormData.published_year}
               onChange={handleBookChange}
-              className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 bg-white text-gray-900 focus:ring-green-200"
-              required
-              min='1000'
-              max={new Date().getFullYear()}
-            />
+              className={`w-full border ${errors.title ? 'border-red-500' : 'border-gray-300'} rounded-lg px-4 py-2 focus:outline-none focus:ring-2 bg-white text-gray-900 focus:ring-green-200`}
+              />
+              {errors.published_year && (
+                <p className="text-red-500 text-sm mt-1">{errors.published_year}</p>
+              )}
           </div>
           <div>
             <label className='block text-left text-2xl  text-gray-700 font-bold mb-2'>
@@ -187,9 +254,11 @@ const BookForm = ({ isUpdating = false }) => {
               name="genre"
               value={bookFormData.genre}
               onChange={handleBookChange}
-              className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 bg-white text-gray-900 focus:ring-green-200"
-              required
-            />
+              className={`w-full border ${errors.title ? 'border-red-500' : 'border-gray-300'} rounded-lg px-4 py-2 focus:outline-none focus:ring-2 bg-white text-gray-900 focus:ring-green-200`}
+              />
+              {errors.genre && (
+                <p className="text-red-500 text-sm mt-1">{errors.genre}</p>
+              )}
           </div>
           <div>
             <label className='block text-left text-2xl  text-gray-700 font-bold mb-2'>
@@ -199,13 +268,15 @@ const BookForm = ({ isUpdating = false }) => {
               name="description"
               value={bookFormData.description}
               onChange={handleBookChange}
-              className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 bg-white text-gray-900 focus:ring-green-200"
-              required
-              maxLength="255"
-              rows="5"
-            />
+              className={`w-full border ${errors.title ? 'border-red-500' : 'border-gray-300'} rounded-lg px-4 py-2 focus:outline-none focus:ring-2 bg-white text-gray-900 focus:ring-green-200`}
+              />
+              {errors.description && (
+                <p className="text-red-500 text-sm mt-1">{errors.description}</p>
+              )}
           </div>
+        
           <div className='flex justify-center'>
+            
             {loading ? (
               <div className="flex justify-center">
                 <BeatLoader color="#ffffff" />
