@@ -2,15 +2,30 @@ import { useParams, Link } from 'react-router-dom'
 import React, { useState, useEffect } from 'react';
 
 const BookDetails = () => {
-  const { loading, setLoading } = useState(false);
+  /**
+   * @returns books from the database
+   * loading and error states for loading and error
+   * setBooks is used to update the state of the books
+   *  useParams is used to get the id of the book from the url
+   */
   const { id } = useParams();
   const [book, setBook] = useState(null);
   const [error, setError] = useState(null);
 
+  /**
+   * useEffect is used to fetch the books from the database
+   * calls fetchSingleBook to fetch the book details
+   */
   useEffect(() => {
     fetchSingleBook();
   }, []);
 
+  /**
+   *  @returns books from the database
+   * loading and error states for loading and error
+   * setBooks is used to update the state of the books
+   *  await response.json(); is used to get the response in json formats
+   */
   const fetchSingleBook = async () => {
     try {
       const response = await fetch(`http://localhost:8000/api/books/${id}`);
@@ -25,6 +40,10 @@ const BookDetails = () => {
     }
   };
 
+  /**
+   * @returns error message
+   * if there is an error, it will display an error message
+   */
   if (error) {
     return (
       <div className='container mx-auto py-8 px-4'>
@@ -37,6 +56,10 @@ const BookDetails = () => {
     );
   }
 
+  /**
+   * @returns loading message
+   * if there is no book, it will display a loading message
+   */
   if (!book) return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex items-center justify-center">
@@ -45,9 +68,11 @@ const BookDetails = () => {
     </div>
   );
 
-  console.log(book);
-
-
+  /**
+   * @returns book details
+   * displays the book details
+   * back button is used to go back to the book collection
+   */
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-2xl mx-auto bg-white rounded-lg shadow-lg overflow-hidden">

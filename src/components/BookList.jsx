@@ -5,17 +5,34 @@ import { BeatLoader } from "react-spinners";
 
 import { Trash, ListCollapse, FilePenLine } from 'lucide-react';
 
-
-
 const BookList = () => {
+  /**
+   * 
+   * @returns books from the database
+   * loading and error states for loading and error
+   * setBooks is used to update the state of the books
+   * useEffect is used to fetch the books from the database
+   */
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [books, setBooks] = useState([]);
 
+  /**
+   * useEffect is used to fetch the books from the database
+   * if there is an error, setError is used to update the state of the error
+   */
   useEffect(() => {
     fetchDataForBookCollection();
   }, []);
 
+  /**
+   * 
+   * @returns books from the database
+   * loading and error states for loading and error
+   * setBooks is used to update the state of the books
+   * fetch the books from the database 
+   *  await response.json(); is used to get the response in json formats
+   */
   const fetchDataForBookCollection = async () => {
     try {
       setLoading(true);
@@ -30,6 +47,16 @@ const BookList = () => {
       setError(error.message);
     }
   };
+
+  /**
+   * 
+   * @param {*} id 
+   * deletes book from collection but first asking the user for confirmation
+   * if yes, delete the book by sending a delete request 
+   * if not, it close the confirmation window
+   * await fetch is used to wait for the response and   setBooks(books.filter(book => book.id !== id)); is used to remove the deleted book from the collection
+   *
+   */
 
   const handleBookRemoval = async (id) => {
     Swal.fire({
@@ -66,6 +93,10 @@ const BookList = () => {
     });
   };
 
+  /**
+   * Loading State
+   * show the loading animation while the data is being fetched
+   */
 
   if (loading) {
     return (
@@ -74,11 +105,12 @@ const BookList = () => {
       </div>
 
     );
-
-
-
-
   }
+
+  /**
+   * Error State
+   * show the error message if there is an error fetching the data or any
+   */
 
   if (error) {
     return (
@@ -87,6 +119,16 @@ const BookList = () => {
       </div>
     );
   }
+
+  /**
+   * Book List
+   * display the fetched list of books
+   * styled as a card with flexbox grid so that it can be displayed in 3 columns
+   * I use tailwind css for styling and react router for navigation
+   * books.map is used to display each book in the list as a card with crud buttons
+   * guide to know what undiscern buttons meant, I don't add guide in delete since it's already understandable
+   * each card had a book id as a key later used for deleting and updating
+   */
 
   return (
     <div className='container mx-auto px-7 py-9 rounded'>
@@ -124,6 +166,7 @@ const BookList = () => {
               </div>
             </div>
           </div>
+        
           {books.map(book => (
             <div key={book.id} className="bookcard bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition duration-200 cursor-pointer ">
               <div className="p-6">

@@ -4,7 +4,17 @@ import Swal from 'sweetalert2';
 import { BeatLoader } from "react-spinners";
 
 
+/** 
+ * @param {boolean} props.isUpdating - flag to determine if form is in update mode
+ * */
 const BookForm = ({ isUpdating = false }) => {
+  /**
+   * loading and error states for loading and error
+   * useParams is used to get the id of the book from the url
+   * setBookFormData is used to update the state of the bookFormData
+   * navigate is used to navigate to the book collection page
+   * bookFormData is used to store the data of the book
+   */
   const [loading, setLoading] = useState(false);
   const { id } = useParams();
   const navigate = useNavigate();
@@ -16,13 +26,23 @@ const BookForm = ({ isUpdating = false }) => {
     genre: '',
     description: ''
   });
-
+  /**
+   * useEffect is used to fetch the book from the database
+   * if updating is true, fetchSingleBook is called to get book details
+   *  re run if updating changes
+   */
   useEffect(() => {
     if (isUpdating) {
       fetchSingleBook();
     }
   }, [isUpdating]);
 
+  /**
+   * @returns books from the database
+   * fetches single book only from the api
+   * handles if error and also the loading state
+   * updates form data with retrieved data
+   */
   const fetchSingleBook = async () => {
     try {
       setLoading(true);
@@ -39,6 +59,10 @@ const BookForm = ({ isUpdating = false }) => {
     }
   }
 
+  /** 
+   * form submission for add and update
+   * swal to show success or error
+  */
   const handleBookFormSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -68,12 +92,25 @@ const BookForm = ({ isUpdating = false }) => {
     }
   };
 
+  /**
+   * 
+   * @param {*} e 
+   * updates the form state when input fields changes
+   */
+
   const handleBookChange = (e) => {
     setBookFormData({
       ...bookFormData,
       [e.target.name]: e.target.value
     });
   };
+
+  /**
+   * forms with styles and validation
+   * nav link to book collection
+   * error section if there is any
+   * button changes between add and update whether updating is true or false
+   */
 
   return (
     <div className='container mx-auto py-8 px-4'>
